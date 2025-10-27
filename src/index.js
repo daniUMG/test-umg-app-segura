@@ -20,17 +20,17 @@ app.use(limiter);
 
 // Ruta de ejemplo con validación y sanitización
 app.post('/api/register', [
-body('email').isEmail().normalizeEmail(),
-body('password').isLength({ min: 8 }),
-body('name').trim().escape()
-], (req, res) => {
-const errors = validationResult(req);
-if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
+    body('email').isEmail().normalizeEmail(),
+    body('password').isLength({ min: 8 }),
+    body('name').trim().escape()
+    ], (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) return res.status(400).json({ errors: errors.array() });
 
 
-// Aquí: hashing de contraseña (bcrypt)
-// Guardar en BD con mínimo privilegio
-res.json({ message: 'Usuario creado (ejemplo)' });
+    // Aquí: hashing de contraseña (bcrypt)
+    // Guardar en BD con mínimo privilegio
+    res.json({ message: 'Usuario creado (ejemplo)' });
 });
 
 

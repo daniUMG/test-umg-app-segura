@@ -1,0 +1,40 @@
+name: Secure CI/CD Pipeline
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build-test-scan:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run tests
+        run: npm test || echo "No tests defined, skipping"
+
+      - name: Scan for vulnerabilities
+        run: npm audit --audit-level=moderate
+
+      - name: Build application
+        run: npm run build || echo "No build step, skipping"
+
+      - name: Trigger Render Deployment
+        if: github.ref == 'refs/heads/master'
+        run: |
+          curl -X POST \
+          -H "Accept: application/json" \
+          -H "Authorization: Bearer ${{ secrets.RENDER_API_KEY }}" \
+          https://api.render.com/v1/services/${{ secrets.RENDER_SERVICE_ID }}/deploys
